@@ -13,15 +13,19 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('items', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->string('avatar')->nullable();
-            $table->rememberToken();
+            $table->string('url');
+            $table->char('platform', 10)->index();
+            $table->unsignedTinyInteger('type');
             $table->timestamps();
+
+            $table->comment(
+                "A table of Items (Scrape/API) \n".
+                "type: \n".
+                "1. is an API item \n".
+                "2. is a Scrape item"
+            );
         });
     }
 
@@ -32,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('items');
     }
 };

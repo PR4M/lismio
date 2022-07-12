@@ -13,14 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('playlist_items', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->string('avatar')->nullable();
-            $table->rememberToken();
+
+            $table->unsignedBigInteger('playlist_id');
+            $table->foreign('playlist_id')->references('id')->on('playlists')->onDelete('cascade');
+
+            $table->unsignedBigInteger('audiobook_id');
+            $table->foreign('audiobook_id')->references('id')->on('audiobooks')->onDelete('cascade');
+
             $table->timestamps();
         });
     }
@@ -32,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('playlist_items');
     }
 };
