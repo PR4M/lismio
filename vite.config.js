@@ -8,4 +8,8 @@ export default defineConfig({
             'resources/js/app.js',
         ]),
     ],
+    server: {
+        https: false,
+        host: 'lismio.fun',
+    }
 });
