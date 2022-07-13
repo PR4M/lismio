@@ -2,7 +2,10 @@
 
 use Goutte\Client;
 use App\Enums\ItemType;
+use App\Spiders\Audible;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpClient\HttpClient;
 
 /*
@@ -84,7 +87,7 @@ Route::get('extract-hoopla-items', function () {
     $crawler = $client->request('GET', 'https://www.hoopladigital.com/collection/-108?sort=DISPLAY_DATE&page=1&kindId=8');
 
     dd ($crawler);
-    
+
     // $crawler->filter('a > div > div > p')->each(function ($node) {
     //     print $node->text()."<br>";
     // });
@@ -110,11 +113,95 @@ Route::get('extract-kobo-items', function () {
     // Go to the symfony.com website
     $crawler = $client->request('GET', 'https://www.kobo.com/ww/en/search?query=&fcmedia=Audiobook');
 
+    $collection = array();
+
     // Get each title and url of the extracted item
-    $crawler->filter('li > div > div > h2 > a')->each(function ($node) {
-        print $node->text();
-        print ": ";
-        print $node->attr('href');
-        print "<br><br>";
+    $crawler->filter('li > div > div > h2 > a')
+        ->each(function (Crawler $node, $i) use (&$collection) {
+
+            $collection[$i] = [
+                'title' => $node->text(),
+                'link' => $node->attr('href')
+            ];
+
+            print $i . ". " . $node->text();
+            print ": ";
+            print $node->attr('href');
+            print "<br><br>";
     });
+
+
+});
+
+Route::get('audible-spider', function () {
+
+    $notDuplicated  = [];
+    $totalDuplicate = [];
+
+    $spider = new Audible('https://www.audible.com/newreleases');
+
+    $spider->items()->each(function($item, $i) use (&$totalDuplicate, &$notDuplicated) {
+
+        // Save item to "items" table if it's not existing yet
+        // A new dispatch job for each item is automatically created
+        // through \App\Model\Item event listener inside the model
+
+        // print $i . " | " . $item['title'] . "<br>";
+
+        // print $i;
+
+        if (DB::table('items')
+                ->where('title', $item['title'])
+                ->where('platform', 'audible')
+                ->doesntExist()) {
+
+                // $notDuplicated = $notDuplicated + 1;
+                $notDuplicated[$i] = $item['title'];
+
+                // ...
+        } else {
+            // increase value on $totalDuplicate variable
+            // $totalDuplicate = $totalDuplicate + 1;
+            $totalDuplicate[$i] = $item['title'];
+        }
+
+        // if $totalDuplicate == 10
+        // exit this loop extraction
+        if ($totalDuplicate == 10) {
+            exit;
+        }
+
+        // if $i equal to latest index (reached latest loop)
+        // visit page with pageNumber - 1
+        // Update Redis KV
+
+
+    })->last(function () {
+        print ("x");
+    });
+
+    //dd ($notDuplicated, $totalDuplicate);
+
+});
+
+Route::get('check-two-strings', function () {
+    $lower  = strtolower("Black Tie Villainy");
+    $origin = "Black Tie Villainy";
+
+    dd( $lower == $origin, $lower === $origin );
+});
+
+
+Route::get('insert-loop-array', function () {
+
+    $arr = ['apple', 'durian', 'jeruk'];
+
+    $newarr = [];
+
+    foreach ($arr as $r) {
+        $newarr[] = $r;
+    }
+
+    dd($newarr);
+
 });

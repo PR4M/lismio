@@ -28,19 +28,76 @@ class TouchAudible extends Command
      *
      * @return int
      */
-    public function handle(Audible $spider)
+    public function handle()
     {
-        $items = $spider->itemsLink();
+        $this->option('type') == 'newest' ?
+            $this->inspectNewest() : $this->inspectBackwards();
+    }
 
-        foreach ($items as $item) {
-            // save item to "items" table
-            Item::create([
-                'title' => $item->title,
-                'description' => $item->description,
-                'link' => $item->link,
-                'type' => ItemType::SCRAPE->value,
-                'platform' => $spider->platform()
-            ]);
-        }
+    // This Artisan Command is scheduled as queue job when option 'newest'
+    // A Web Crawler based on Goutte/DOmCrawler is dispatched to visit Audible new releases page
+    // All the latest items on the page will be crawled and extracted
+    private function inspectNewest()
+    {
+        $this->extract("https://www.audible.com/newreleases");
+    }
+
+    // This Artisan Command is scheduled as queue job when no option is provided
+    // A Web Crawler based on Goutte/DOmCrawler is dispatched to visit Audible new releases page
+    // All the items on the page will be crawled and extracted
+    private function inspectBackwards()
+    {
+        // Read latest page indexed by the web crawler
+        $pageNumber = 3;
+
+        $this->extract("https://www.audible.com/newreleases?page={$pageNumber}")
+    }
+
+    private function extract($source)
+    {
+        $totalDuplicate = 0;
+
+        $spider = new Audible($source);
+
+        $spider->items()->each(function($item, $i) use ($totalDuplicate) {
+
+            // Save item to "items" table if it's not existing yet
+            // A new dispatch job for each item is automatically created
+            // through \App\Model\Item event listener inside the model
+
+            if (DB::table('items')
+                ->where('platform', 'audible')
+                ->where('url', $item['title'])
+                ->doesntExist()) {
+
+                Item::create([
+                    'title' => $item['title'],
+                    'link'  => $item['link'],
+                    'type'  => ItemType::SCRAPE->value,
+                    'platform' => 'audible'
+                ]);
+
+            } else {
+                // increase value on $totalDuplicate variable
+                $totalDuplicate = $totalDuplicate + 1;
+            }
+
+            // If $totalDuplicate == 10
+            // Exit this loop extraction
+            // Update Redis KV
+
+            if ($totalDuplicate == 10) {
+                exit;
+            }
+
+            // if $i equal to latest index (reached latest loop)
+            // visit page with pageNumber - 1
+            // Update Redis KV
+            if ($i == 19) {
+                
+            }
+
+        });
     }
 }
+
