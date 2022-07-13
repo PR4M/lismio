@@ -1,0 +1,84 @@
+.audiobook-card {
+    width: 225px;
+  }
+  .audiobook-card img {
+    max-width: 225px;
+  }
+  .audiobook-card .title {
+    max-width: 225px;
+  }
+  .audiobook-card .artist {
+    max-width: 225px;
+  }
+
+  .page-audiobook .cover {
+    width: 600px;
+    height: 600px;
+  }
+
+  .marketing-banner {
+    min-width: 400px;
+    width: 400px;
+  }
+
+  .slider-banners .discover-banner-container {
+    width: 100%;
+  }
+
+  .slider-audiobooks .cursor-grap {
+    cursor: -webkit-grab;
+    cursor: grab;
+  }
+  .slider-audiobooks .scrollbar-hide {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE 10+ */
+  }
+  .slider-audiobooks .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome Safari */
+  }
+
+  [x-cloak] {
+    display: none;
+  }
+
+  body {
+    font-family: "Fira Sans", sans-serif;
+  }
+
+  .font-brand-headline {
+    font-family: "Jost", sans-serif;
+  }
+
+  .font-brand-text {
+    font-family: "Fira Sans", sans-serif;
+  }
+
+  .fade-in {
+    opacity: 1;
+    -webkit-animation-name: fadeInOpacity;
+            animation-name: fadeInOpacity;
+    -webkit-animation-iteration-count: 1;
+            animation-iteration-count: 1;
+    -webkit-animation-timing-function: ease-in;
+            animation-timing-function: ease-in;
+    -webkit-animation-duration: 0.5s;
+            animation-duration: 0.5s;
+  }
+
+  @-webkit-keyframes fadeInOpacity {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeInOpacity {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
