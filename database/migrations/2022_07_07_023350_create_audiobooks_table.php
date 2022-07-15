@@ -19,12 +19,10 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->char('language', 10)->default('english');
             $table->string('isbn')->nullable();
-            $table->string('slug')->unique();
-            $table->char('platform', 10);
-            $table->string('source_url');
+            $table->string('slug')->nullable()->unique();
             $table->string('image')->nullable();
             $table->boolean('is_unabridged')->default(false);
-            $table->unsignedInteger('duration');
+            $table->unsignedInteger('duration')->default(0);
             $table->date('release_date');
             $table->string('preview_link')->nullable();
             $table->unsignedTinyInteger('status')->default(0);

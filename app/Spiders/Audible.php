@@ -121,7 +121,12 @@ class Audible
     // Return Original Preview Sample URL from the source
     public function previewSampleOriginUrl()
     {
-        return $this->crawler->filterXPath( $this->xpath('single_item_preview') )->attr('data-mp3');
+        // WIP
+        if ($this->crawler->filterXPath( $this->xpath('single_item_preview') )->attr('data-mp3') != '') {
+            return $this->crawler->filterXPath( $this->xpath('single_item_preview') )->attr('data-mp3');
+        }
+
+        return ;
     }
 
     // Return cleaned or formatted duration in total minutes
@@ -162,11 +167,11 @@ class Audible
     {
         $collection = array();
 
-        $this->crawler->filter( $this->selector('items') )
+        $this->crawler->filter( $this->selector('listing_item_title') )
             ->each(function (Crawler $node, $i) use (&$collection) {
                 $collection[$i] = [
                     'title' => $node->text(),
-                    'link'  => $node->attr('href')
+                    'url'   => 'https://www.audible.com' . $node->attr('href')
                 ];
         });
 
@@ -182,7 +187,7 @@ class Audible
             'title'         => $this->title(),
             'description'   => $this->description(),
             'image'         => $this->imageOriginUrl(),
-            'sample'        => $this->previewSampleOriginUrl()
+            //'sample'        => $this->previewSampleOriginUrl()
         ];
     }
 }

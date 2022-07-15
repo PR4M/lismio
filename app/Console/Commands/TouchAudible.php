@@ -6,6 +6,7 @@ use App\Models\Item;
 use App\Enums\ItemType;
 use App\Spiders\Audible;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class TouchAudible extends Command
 {
@@ -30,8 +31,12 @@ class TouchAudible extends Command
      */
     public function handle()
     {
-        $this->option('type') == 'newest' ?
-            $this->inspectNewest() : $this->inspectBackwards();
+        // dd ('artisan called');
+
+        // $this->option('type') == 'newest' ?
+        //    $this->inspectNewest() : $this->inspectBackwards();
+
+        $this->inspectNewest();
     }
 
     // This Artisan Command is scheduled as queue job when option 'newest'
@@ -72,7 +77,7 @@ class TouchAudible extends Command
 
                 Item::create([
                     'title' => $item['title'],
-                    'link'  => $item['link'],
+                    'url'   => $item['url'],
                     'type'  => ItemType::SCRAPE->value,
                     'platform' => 'audible'
                 ]);

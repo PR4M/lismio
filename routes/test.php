@@ -2,6 +2,7 @@
 
 use Goutte\Client;
 use App\Enums\ItemType;
+use App\Http\Controllers\PageController;
 use App\Spiders\Audible;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -32,6 +33,7 @@ Route::get('/view', function () {
     return view('layout.content');
 });
 
+Route::get('spider-construct', [PageController::class, 'testSpiderConstruct']);
 
 Route::get('read-enum', function () {
     dd(ItemType::SCRAPE->value);
@@ -64,7 +66,7 @@ Route::prefix('/extract')->group(function () {
 
     Route::get('audible-item', function () {
 
-        $u1 = 'https://www.audible.com/pd/The-Comeback-Audiobook/B09TV414Q8';
+        $u1 = 'https://www.audible.com/pd/The-Comeback-Audiobook/B09TV414Q8c';
         $u2 = 'https://www.audible.com/pd/An-Immigrants-Love-Letter-to-the-West-Audiobook/B09WBWPR6T';
         $u3 = 'https://www.audible.com/pd/The-Weight-of-Command-Audiobook/B0B193J92Q';
         $u4 = 'https://www.audible.com/pd/Influence-Empire-Audiobook/B09VLN4LDG';
@@ -169,6 +171,8 @@ Route::prefix('playground')->group( function () {
 
         $spider->items()->each(function($item, $i) use (&$totalDuplicate, &$notDuplicated) {
 
+            print $item['url'];
+
             // Save item to "items" table if it's not existing yet
             // A new dispatch job for each item is automatically created
             // through \App\Model\Item event listener inside the model
@@ -177,34 +181,32 @@ Route::prefix('playground')->group( function () {
 
             // print $i;
 
-            if (DB::table('items')
-                    ->where('title', $item['title'])
-                    ->where('platform', 'audible')
-                    ->doesntExist()) {
+            // if (DB::table('items')
+            //         ->where('title', $item['title'])
+            //         ->where('platform', 'audible')
+            //         ->doesntExist()) {
 
-                    // $notDuplicated = $notDuplicated + 1;
-                    $notDuplicated[$i] = $item['title'];
+            //         // $notDuplicated = $notDuplicated + 1;
+            //         $notDuplicated[$i] = $item['title'];
 
-                    // ...
-            } else {
-                // increase value on $totalDuplicate variable
-                // $totalDuplicate = $totalDuplicate + 1;
-                $totalDuplicate[$i] = $item['title'];
-            }
+            //         // ...
+            // } else {
+            //     // increase value on $totalDuplicate variable
+            //     // $totalDuplicate = $totalDuplicate + 1;
+            //     $totalDuplicate[$i] = $item['title'];
+            // }
 
-            // if $totalDuplicate == 10
-            // exit this loop extraction
-            if ($totalDuplicate == 10) {
-                exit;
-            }
+            // // if $totalDuplicate == 10
+            // // exit this loop extraction
+            // if ($totalDuplicate == 10) {
+            //     exit;
+            // }
 
-            // if $i equal to latest index (reached latest loop)
-            // visit page with pageNumber - 1
-            // Update Redis KV
+            // // if $i equal to latest index (reached latest loop)
+            // // visit page with pageNumber - 1
+            // // Update Redis KV
 
 
-        })->last(function () {
-            print ("x");
         });
 
         //dd ($notDuplicated, $totalDuplicate);

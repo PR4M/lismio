@@ -39,12 +39,16 @@ class InspectAudibleItem implements ShouldQueue
      *
      * @return void
      */
-    public function handle(Audible $spider)
+    public function handle()
     {
-        //
-        $spider->__construct( $this->item->url );
+        $spider = new Audible( $this->item->url );
 
         $item = $spider->details();
+
+        // DB::table('testinserts')->insert([
+        //     'title' => $item['title'],
+        //     'created_at' => now()
+        // ]);
 
         // if the item already exists on directories/shops
         // it means the item was already inserted by an admin or user suggestion
@@ -64,14 +68,18 @@ class InspectAudibleItem implements ShouldQueue
 
         if (! $audiobook) {
             $audiobook = Audiobook::create([
-                'title' => $item['title']
+                'title'         => $item['title'],
+                'description'   => $item['description'],
+                'image'         => $item['image'],
+                'release_date'  => now(),
             ]);
         }
 
         $audiobook->directories()->create([
-            'title'     => $item['title'],
-            'url'       => $item['url'],
-            'platform'  => 'audiobook',
+            'title'         => $item['title'],
+            'description'   => $item['description'],
+            'url'           => $this->item->url,
+            'platform'      => 'audiobook',
         ]);
 
     }

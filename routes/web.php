@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\PageController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +18,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/get-audible-items', function () {
+    Artisan::call('touch:audible');
+});
+
+Route::get('browse', [PageController::class, 'browse'])->name('browse_page');
+
+Route::get('audiobook/{audiobook}', [PageController::class, 'detail'])->name('detail_page');
