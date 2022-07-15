@@ -50,7 +50,7 @@ class TouchAudible extends Command
         // Read latest page indexed by the web crawler
         $pageNumber = 3;
 
-        $this->extract("https://www.audible.com/newreleases?page={$pageNumber}")
+        $this->extract("https://www.audible.com/newreleases?page={$pageNumber}");
     }
 
     private function extract($source)
@@ -94,7 +94,7 @@ class TouchAudible extends Command
             // visit page with pageNumber - 1
             // Update Redis KV
             if ($i == 19) {
-                
+
             }
 
         });

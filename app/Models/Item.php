@@ -26,13 +26,13 @@ class Item extends Model
             // if this model created by Artisan Command Job for Scraping
             // dispatch a new queue job for this model
             if ($model->type == ItemType::SCRAPE->value) {
-                InspectAudibleItem::dispatch($model)->delay(now()->addMinutes(5));
+                InspectAudibleItem::dispatch($model)->delay(now()->addMinutes(1));
             }
         });
 
         static::updating(function($model) {
             //
-            $model->unix_updated_at = round(microtime(true));
+            // $model->unix_updated_at = round(microtime(true));
         });
     }
 
